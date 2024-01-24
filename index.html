@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #3498db;
+        }
+        
+        form {
+            display: grid;
+            gap: 10px;
+        }
+        
+        label {
+            margin-bottom: 5px;
+        }
+        
+        input {
+            padding: 8px;
+            border: 3px solid black;
+            border-radius: 4px;
+        }
+        
+        button {
+            padding: 10px;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .bt {
+            padding: 10px;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            width: 100px;
+            position: relative;
+            left: 700px
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        #searchContainer {
+            margin-bottom: 16px;
+        }
+        
+        #contactList {
+            margin-top: 20px;
+        }
+        
+        .contact {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .contact span {
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .contact button {
+            padding: 8px;
+            background-color: #e74c3c;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .contact button:hover {
+            background-color: #c0392b;
+        }
+        
+        .edit-form {
+            display: grid;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .edit-form input {
+            width: calc(100% - 10px);
+        }
+    </style>
+
+    <title>Contact CRUD</title>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Contact Management</h1>
+
+        <div id="searchContainer">
+            <label for="search">Search by Name:</label>
+            <input type="text" id="search" oninput="searchContacts()">
+        </div>
+
+        <form id="contactForm">
+            <label for="name">Name:</label>
+            <input type="text" id="name" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" required>
+
+            <label for="phone">Phone:</label>
+            <input type="tel" id="phone" required>
+
+            <label for="address">Address:</label>
+            <input type="text" id="address" required>
+
+            <button type="button" class="bt" onclick="addContact()">Add Contact</button>
+        </form>
+
+        <div id="contactList">
+            <!-- Contact list will be displayed here -->
+        </div>
+    </div>
+
+    <script>
+        let contacts = [];
+
+        function addContact() {
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const address = document.getElementById('address').value;
+
+            if (name && email && phone && address) {
+                const contact = {
+                    name,
+                    email,
+                    phone,
+                    address
+                };
+                contacts.push(contact);
+                displayContacts();
+                clearForm();
+            } else {
+                alert('Please fill in all fields.');
+            }
+        }
+
+        function displayContacts() {
+            const contactListDiv = document.getElementById('contactList');
+            contactListDiv.innerHTML = '';
+
+            contacts.forEach((contact, index) => {
+                const contactDiv = document.createElement('div');
+                contactDiv.className = 'contact';
+
+                const info = document.createElement('span');
+                info.innerHTML = `<strong>Name:</strong> ${contact.name}<br>
+                                 <strong>Email:</strong> ${contact.email}<br>
+                                 <strong>Phone:</strong> ${contact.phone}<br>
+                                 <strong>Address:</strong> ${contact.address}`;
+                contactDiv.appendChild(info);
+
+                const editButton = document.createElement('button');
+                editButton.textContent = 'Edit';
+                editButton.onclick = () => editContact(index);
+                contactDiv.appendChild(editButton);
+
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Delete';
+                deleteButton.onclick = () => deleteContact(index);
+                contactDiv.appendChild(deleteButton);
+
+                contactListDiv.appendChild(contactDiv);
+            });
+        }
+
+        function clearForm() {
+            document.getElementById('name').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('phone').value = '';
+            document.getElementById('address').value = '';
+        }
+
+        function editContact(index) {
+            const contact = contacts[index];
+
+            const editForm = document.createElement('div');
+            editForm.className = 'edit-form';
+
+            const nameLabel = document.createElement('label');
+            nameLabel.textContent = 'Name:';
+            editForm.appendChild(nameLabel);
+
+            const nameInput = document.createElement('input');
+            nameInput.type = 'text';
+            nameInput.value = contact.name;
+            editForm.appendChild(nameInput);
+
+            const emailLabel = document.createElement('label');
+            emailLabel.textContent = 'Email:';
+            editForm.appendChild(emailLabel);
+
+            const emailInput = document.createElement('input');
+            emailInput.type = 'email';
+            emailInput.value = contact.email;
+            editForm.appendChild(emailInput);
+
+            const phoneLabel = document.createElement('label');
+            phoneLabel.textContent = 'Phone:';
+            editForm.appendChild(phoneLabel);
+
+            const phoneInput = document.createElement('input');
+            phoneInput.type = 'tel';
+            phoneInput.value = contact.phone;
+            editForm.appendChild(phoneInput);
+
+            const addressLabel = document.createElement('label');
+            addressLabel.textContent = 'Address:';
+            editForm.appendChild(addressLabel);
+
+            const addressInput = document.createElement('input');
+            addressInput.type = 'text';
+            addressInput.value = contact.address;
+            editForm.appendChild(addressInput);
+
+            const saveButton = document.createElement('button');
+            saveButton.textContent = 'Update';
+            saveButton.onclick = () => saveContact(index);
+            editForm.appendChild(saveButton);
+
+            const cancelButton = document.createElement('button');
+            cancelButton.textContent = 'Cancel';
+            cancelButton.onclick = () => cancelEdit(index);
+            editForm.appendChild(cancelButton);
+
+            document.getElementById('contactList').replaceChild(editForm, document.getElementById('contactList').children[index]);
+        }
+
+        function saveContact(index) {
+            const name = document.querySelector('.edit-form input:nth-of-type(1)').value;
+            const email = document.querySelector('.edit-form input:nth-of-type(2)').value;
+            const phone = document.querySelector('.edit-form input:nth-of-type(3)').value;
+            const address = document.querySelector('.edit-form input:nth-of-type(4)').value;
+
+            if (name && email && phone && address) {
+                contacts[index] = {
+                    name,
+                    email,
+                    phone,
+                    address
+                };
+                displayContacts();
+            } else {
+                alert('Please fill in all fields.');
+            }
+        }
+
+        function cancelEdit(index) {
+            displayContacts();
+        }
+
+        function deleteContact(index) {
+            contacts.splice(index, 1);
+            displayContacts();
+        }
+
+        function searchContacts() {
+            const searchValue = document.getElementById('search').value.toLowerCase();
+            const filteredContacts = contacts.filter(contact => contact.name.toLowerCase().includes(searchValue));
+            displayFilteredContacts(filteredContacts);
+        }
+
+        function displayFilteredContacts(filteredContacts) {
+            const contactListDiv = document.getElementById('contactList');
+            contactListDiv.innerHTML = '';
+
+            filteredContacts.forEach((contact, index) => {
+                const contactDiv = document.createElement('div');
+                contactDiv.className = 'contact';
+
+                const info = document.createElement('span');
+                info.innerHTML = `<strong>Name:</strong> ${contact.name}<br>
+                                 <strong>Email:</strong> ${contact.email}<br>
+                                 <strong>Phone:</strong> ${contact.phone}<br>
+                                 <strong>Address:</strong> ${contact.address}`;
+                contactDiv.appendChild(info);
+
+                const editButton = document.createElement('button');
+                editButton.textContent = 'Edit';
+                editButton.onclick = () => editContact(index);
+                contactDiv.appendChild(editButton);
+
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Delete';
+                deleteButton.onclick = () => deleteContact(index);
+                contactDiv.appendChild(deleteButton);
+
+                contactListDiv.appendChild(contactDiv);
+            });
+        }
+    </script>
+</body>
+
+</html>
